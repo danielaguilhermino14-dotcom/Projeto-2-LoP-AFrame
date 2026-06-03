@@ -336,8 +336,8 @@
 
       <a-entity position="0 2 4.5" rotation="-12 0 0">
         <a-camera fov="60" near="0.1" far="1000"
-                  look-controls="enabled:false"
-                  wasd-controls="enabled:false"></a-camera>
+                  look-controls="enabled:true"
+                  wasd-controls="enabled:true"></a-camera>
       </a-entity>
     </a-entity>
 
@@ -440,8 +440,8 @@ AFRAME.registerComponent('car-controller', {
   init () {
     this.physKeys   = {};
     this.speed      = 0;
-    this.maxSpeed   = 0.12;
-    this.accel      = 0.006;
+    this.maxSpeed   = 0.24;
+    this.accel      = 0.012;
     this.friction   = 0.92;
     this.turnSpeed  = 0.04;
     this.angle      = 0;
