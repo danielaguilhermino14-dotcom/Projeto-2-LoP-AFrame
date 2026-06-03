@@ -115,6 +115,56 @@
       white-space: nowrap;
     }
 
+    /* ── Placar ─────────────────────────────────────── */
+    #scoreboard {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      z-index: 100;
+      background: rgba(0,0,0,0.65);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 10px 16px;
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .score-line {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .score-line span {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #score-val   { color: #ffe94d; }
+
+    /* ── Notificação flutuante ──────────────────────── */
+    #notif {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 200;
+      font-size: 36px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 0 0 30px currentColor;
+      pointer-events: none;
+      transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+      opacity: 0;
+    }
+
+    #notif.show {
+      transform: translate(-50%, -80%) scale(1);
+      opacity: 1;
+    }
+
     /* ── Legenda de teclado ────────────────────────────── */
     #kb-hint {
       position: fixed;
@@ -132,11 +182,26 @@
     }
 
     #kb-hint span { color: rgba(255,255,255,0.75); }
+
+    /* ── Flash de dano ─────────────────────────────────── */
+    #damage-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(255, 40, 40, 0.0);
+      pointer-events: none;
+      transition: background 0.1s;
+    }
+
+    #damage-flash.hit {
+      background: rgba(255, 40, 40, 0.45);
+    }
   </style>
 </head>
 <body>
 
-<!-- ── Cena 3D ─────────────────────────────────────────── -->
+<div id="damage-flash"></div>
+
 <div id="scene-container">
   <a-scene embedded style="width:100%;height:100vh;" vr-mode-ui="enabled:false" renderer="antialias:true">
 
@@ -150,13 +215,11 @@
     <a-plane position="0 0 0" rotation="-90 0 0" width="200" height="200"
              material="color:#5a9e5a;roughness:1"></a-plane>
 
-    <!-- Estrada -->
     <a-plane position="0 0.01 0" rotation="-90 0 0" width="6" height="400"
              color="#555" shadow></a-plane>
     <a-plane position="0 0.015 0" rotation="-90 0 0" width="0.25" height="400"
              material="color:#fff;opacity:0.5;transparent:true"></a-plane>
 
-    <!-- Árvores decorativas -->
     <a-entity position="5 0 -20">
       <a-cylinder position="0 0.6 0" radius="0.15" height="1.2" color="#5c3a1e"></a-cylinder>
       <a-cone position="0 1.8 0" radius-bottom="0.9" height="2" color="#2d6a2d"></a-cone>
@@ -174,17 +237,55 @@
       <a-cone position="0 1.8 0" radius-bottom="0.9" height="2" color="#2d6a2d"></a-cone>
     </a-entity>
 
-    <!-- Carro -->
+    <a-box id="obs-0" position="-1.5 0.5 -15" width="1.4" height="1.0" depth="1.4"
+           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
+    <a-box id="obs-1" position=" 1.5 0.5 -22" width="1.4" height="1.0" depth="1.4"
+           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
+
+    <a-box id="obs-2" position="0   0.5 -38" width="1.4" height="1.0" depth="1.4"
+           material="color:#c03000;roughness:0.5;metalness:0.3"></a-box>
+    <a-box id="obs-3" position="-1.8 0.5 -50" width="1.4" height="1.0" depth="1.4"
+           material="color:#c03000;roughness:0.5;metalness:0.3"></a-box>
+
+    <a-box id="obs-4" position=" 1.5 0.5 -65" width="1.4" height="1.0" depth="1.4"
+           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
+    <a-box id="obs-5" position="-1.2 0.5 -78" width="1.4" height="1.0" depth="1.4"
+           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
+
+    <a-entity id="col-0" position="-0.8 0.6 -10" class="collectible">
+      <a-dodecahedron radius="0.28"
+        material="color:#ffe94d;emissive:#ffcc00;emissiveIntensity:1.2;roughness:0.1;metalness:0.8"
+        animation="property:rotation;to:360 360 0;loop:true;dur:2000;easing:linear"
+        animation__bob="property:position;to:-0.8 1.0 -10;from:-0.8 0.6 -10;loop:true;dur:1200;dir:alternate;easing:easeInOutSine">
+      </a-dodecahedron>
+      <a-sphere radius="0.38" material="color:#ffee00;opacity:0.18;transparent:true;side:back"></a-sphere>
+    </a-entity>
+
+    <a-entity id="col-1" position=" 1.2 0.6 -18" class="collectible">
+      <a-dodecahedron radius="0.28"
+        material="color:#ffe94d;emissive:#ffcc00;emissiveIntensity:1.2;roughness:0.1;metalness:0.8"
+        animation="property:rotation;to:360 360 0;loop:true;dur:2000;easing:linear"
+        animation__bob="property:position;to:1.2 1.0 -18;from:1.2 0.6 -18;loop:true;dur:1400;dir:alternate;easing:easeInOutSine">
+      </a-dodecahedron>
+      <a-sphere radius="0.38" material="color:#ffee00;opacity:0.18;transparent:true;side:back"></a-sphere>
+    </a-entity>
+
+    <a-entity id="col-2" position="0 0.6 -30" class="collectible">
+      <a-dodecahedron radius="0.28"
+        material="color:#00ffcc;emissive:#00ddaa;emissiveIntensity:1.4;roughness:0.1;metalness:0.8"
+        animation="property:rotation;to:360 360 0;loop:true;dur:1800;easing:linear"
+        animation__bob="property:position;to:0 1.0 -30;from:0 0.6 -30;loop:true;dur:1100;dir:alternate;easing:easeInOutSine">
+      </a-dodecahedron>
+      <a-sphere radius="0.38" material="color:#00ffcc;opacity:0.18;transparent:true;side:back"></a-sphere>
+    </a-entity>
+
     <a-entity id="car" position="0 0 0" car-controller>
 
-      <!-- Carroceria principal -->
       <a-box position="0 0.45 0" width="1.1" height="0.28" depth="2.3"
              material="color:#cc2222;roughness:0.5;metalness:0.3"></a-box>
-      <!-- Teto/cabine -->
       <a-box position="0 0.75 0.1" width="0.95" height="0.42" depth="1.3"
              material="color:#cc2222;roughness:0.5;metalness:0.3"></a-box>
 
-      <!-- Vidros -->
       <a-box position="0 0.82 -0.53"  width="0.9" height="0.3" depth="0.05" rotation="-22 0 0"
              material="color:#9fd3f0;opacity:0.6;transparent:true"></a-box>
       <a-box position="0 0.82 0.75"   width="0.9" height="0.3" depth="0.05" rotation="22 0 0"
@@ -194,33 +295,27 @@
       <a-box position="0.48 0.82 0.1"  width="0.04" height="0.28" depth="0.85"
              material="color:#9fd3f0;opacity:0.6;transparent:true"></a-box>
 
-      <!-- Faróis -->
       <a-box position="-0.3 0.46 -1.17" width="0.22" height="0.1" depth="0.05"
              material="color:#ffffcc;emissive:#ffff88;emissiveIntensity:0.5"></a-box>
       <a-box position="0.3 0.46 -1.17"  width="0.22" height="0.1" depth="0.05"
              material="color:#ffffcc;emissive:#ffff88;emissiveIntensity:0.5"></a-box>
 
-      <!-- Lanternas -->
       <a-box position="-0.3 0.46 1.17" width="0.22" height="0.1" depth="0.05"
              material="color:#ff4444;emissive:#cc0000;emissiveIntensity:0.4"></a-box>
       <a-box position="0.3 0.46 1.17"  width="0.22" height="0.1" depth="0.05"
              material="color:#ff4444;emissive:#cc0000;emissiveIntensity:0.4"></a-box>
 
-      <!-- Grade -->
       <a-box position="0 0.38 -1.17" width="0.7" height="0.12" depth="0.05"
              material="color:#333;roughness:0.6;metalness:0.5"></a-box>
 
-      <!-- Para-choques -->
       <a-box position="0 0.3 -1.19" width="1.05" height="0.1" depth="0.06"
              material="color:#888;roughness:0.4;metalness:0.6"></a-box>
       <a-box position="0 0.3 1.19"  width="1.05" height="0.1" depth="0.06"
              material="color:#888;roughness:0.4;metalness:0.6"></a-box>
 
-      <!-- Teto preto -->
       <a-box position="0 0.97 0.1" width="0.6" height="0.02" depth="0.65"
              material="color:#111;roughness:0.8"></a-box>
 
-      <!-- Rodas -->
       <a-entity id="wheel-fl" position="-0.63 0.28 -0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
@@ -229,23 +324,19 @@
       <a-entity id="wheel-fr" position="0.63 0.28 -0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-cylinder>
-      </a-entity>
+        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-entity>
       <a-entity id="wheel-rl" position="-0.63 0.28 0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-cylinder>
-      </a-entity>
+        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-entity>
       <a-entity id="wheel-rr" position="0.63 0.28 0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-cylinder>
-      </a-entity>
+        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-entity>
 
-      <!-- Câmera seguindo o carro -->
-      <a-entity position="0 4.5 8" look-controls="reverseMouseDrag:false">
+      <a-entity position="0 2 4.5" rotation="-12 0 0">
         <a-camera fov="60" near="0.1" far="1000"
-                  look-controls="enabled:true"
+                  look-controls="enabled:false"
                   wasd-controls="enabled:false"></a-camera>
       </a-entity>
     </a-entity>
@@ -255,13 +346,11 @@
   </a-scene>
 </div>
 
-<!-- ── Câmera / canvas MediaPipe ─────────────────────── -->
 <div id="cam-wrapper">
   <video  id="input-video"  autoplay muted playsinline></video>
   <canvas id="output-canvas"></canvas>
 </div>
 
-<!-- ── HUD de gestos ──────────────────────────────────── -->
 <div id="hud">
   <div class="gesture-row">
     <div class="gesture-icon" id="icon-fwd">🖐️</div>
@@ -281,27 +370,75 @@
   </div>
 </div>
 
-<!-- ── Status ─────────────────────────────────────────── -->
 <div id="status-badge">⏳ Iniciando câmera…</div>
 
-<!-- ── Dica teclado ───────────────────────────────────── -->
+<div id="scoreboard">
+  <div class="score-line">⭐ Pontos: <span id="score-val">0</span></div>
+</div>
+
+<div id="notif"></div>
+
 <div id="kb-hint">
   <span>↑</span> Avançar &nbsp; <span>↓</span> Ré<br>
   <span>←</span> Esquerda &nbsp; <span>→</span> Direita<br>
   <span style="font-size:10px;color:rgba(255,255,255,0.3);">Teclado também funciona</span>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     LÓGICA: controlador A-Frame + MediaPipe
-═══════════════════════════════════════════════════════ -->
 <script>
 /* ── Estado global dos gestos (modificado pelo MediaPipe) ── */
 const gestureKeys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
 
+/* ── Estado do jogo (Sem vidas) ───────────────────────────── */
+const gameState = {
+  score: 0,
+  invincible: false,   // cooldown pós-colisão para feedback
+};
+
+const scoreEl = document.getElementById('score-val');
+const notifEl = document.getElementById('notif');
+const flashEl = document.getElementById('damage-flash');
+
+let notifTimer = null;
+
+function showNotif(text, color = '#fff') {
+  notifEl.textContent = text;
+  notifEl.style.color = color;
+  notifEl.style.textShadow = `0 0 30px ${color}`;
+  notifEl.classList.add('show');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => notifEl.classList.remove('show'), 900);
+}
+
+function triggerDamageFlash() {
+  flashEl.classList.add('hit');
+  setTimeout(() => flashEl.classList.remove('hit'), 250);
+}
+
+/* ── Obstáculos e coletáveis ─────────────────────────────── */
+const OBSTACLES = [];
+const COLLECTIBLES = [];
+
+document.querySelector('a-scene').addEventListener('loaded', () => {
+  for (let i = 0; i <= 5; i++) {
+    const el = document.getElementById(`obs-${i}`);
+    if (el) OBSTACLES.push(el);
+  }
+  // Coleta apenas os 3 adicionados no HTML
+  for (let i = 0; i <= 2; i++) {
+    const el = document.getElementById(`col-${i}`);
+    if (el) COLLECTIBLES.push({ el, active: true });
+  }
+});
+
+function dist2D(ax, az, bx, bz) {
+  const dx = ax - bx, dz = az - bz;
+  return Math.sqrt(dx*dx + dz*dz);
+}
+
 /* ── Componente do carro ─────────────────────────────────── */
 AFRAME.registerComponent('car-controller', {
   init () {
-    this.physKeys   = {};          // teclado físico
+    this.physKeys   = {};
     this.speed      = 0;
     this.maxSpeed   = 0.12;
     this.accel      = 0.006;
@@ -321,12 +458,11 @@ AFRAME.registerComponent('car-controller', {
   },
 
   tick () {
-    /* mescla teclado + gestos */
     const k = key => this.physKeys[key] || gestureKeys[key];
 
-    if (k('ArrowUp'))   this.speed = Math.min(this.speed + this.accel,  this.maxSpeed);
+    if (k('ArrowUp'))        this.speed = Math.min(this.speed + this.accel,  this.maxSpeed);
     else if (k('ArrowDown')) this.speed = Math.max(this.speed - this.accel, -this.maxSpeed * 0.6);
-    else this.speed *= this.friction;
+    else                     this.speed *= this.friction;
 
     if (Math.abs(this.speed) > 0.001) {
       const dir = this.speed > 0 ? 1 : -1;
@@ -346,6 +482,40 @@ AFRAME.registerComponent('car-controller', {
     if (this.fr) this.fr.setAttribute('rotation', `${roll} ${steer} 90`);
     if (this.rl) this.rl.setAttribute('rotation', `${roll} 0 90`);
     if (this.rr) this.rr.setAttribute('rotation', `${roll} 0 90`);
+
+    /* ── Colisão com obstáculos (Sem perda de vida) ───── */
+    if (!gameState.invincible) {
+      for (const obs of OBSTACLES) {
+        const op = obs.getAttribute('position');
+        if (!op) continue;
+        if (dist2D(pos.x, pos.z, op.x, op.z) < 1.1) {
+          triggerDamageFlash();
+          showNotif('💥 Batida!', '#ff4455');
+
+          // Apenas repele o carro
+          this.speed *= -0.6;
+
+          // Cooldown de colisão (1.5 s)
+          gameState.invincible = true;
+          setTimeout(() => { gameState.invincible = false; }, 1500);
+          break;
+        }
+      }
+    }
+
+    /* ── Colisão com coletáveis ─────────────────────── */
+    for (const col of COLLECTIBLES) {
+      if (!col.active) continue;
+      const cp = col.el.getAttribute('position');
+      if (!cp) continue;
+      if (dist2D(pos.x, pos.z, cp.x, cp.z) < 0.85) {
+        col.active = false;
+        col.el.setAttribute('visible', 'false');
+        gameState.score += 10;
+        scoreEl.textContent = gameState.score;
+        showNotif('+10 ⭐', '#ffe94d');
+      }
+    }
   },
 
   remove () {
@@ -367,15 +537,7 @@ const iconBwd = document.getElementById('icon-bwd');
 const iconLft = document.getElementById('icon-lft');
 const iconRgt = document.getElementById('icon-rgt');
 
-/* ── Helpers de detecção ─────────────────────────────── */
-
-/**
- * Conta dedos levantados (exceto polegar).
- * Usa a comparação de y dos landmarks (imagem espelhada → y cresce pra baixo).
- * Retorna um array booleano [indicador, médio, anelar, mínimo].
- */
 function fingersUp(lm) {
-  // tips: 8, 12, 16, 20  |  pip: 6, 10, 14, 18
   return [
     lm[8].y  < lm[6].y,
     lm[12].y < lm[10].y,
@@ -384,42 +546,11 @@ function fingersUp(lm) {
   ];
 }
 
-function thumbUp(lm, handedness) {
-  // polegar: tip=4, ip=3
-  // para mão direita (espelhada) tip.x deve ser menor (mais à esquerda)
-  if (handedness === 'Right') return lm[4].x < lm[3].x;
-  return lm[4].x > lm[3].x;
-}
+function isOpenHand(lm)      { return fingersUp(lm).every(Boolean); }
+function isClosedFist(lm)    { return fingersUp(lm).every(f => !f); }
+function isOneFingerUp(lm)   { const f = fingersUp(lm); return  f[0] && !f[1] && !f[2] && !f[3]; }
+function isTwoFingersUp(lm)  { const f = fingersUp(lm); return  f[0] &&  f[1] && !f[2] && !f[3]; }
 
-/** Mão aberta: todos os 4 dedos levantados */
-function isOpenHand(lm) {
-  return fingersUp(lm).every(Boolean);
-}
-
-/** Mão fechada: nenhum dedo levantado */
-function isClosedFist(lm) {
-  return fingersUp(lm).every(f => !f);
-}
-
-/**
- * Um dedo apontando para cima: só o indicador levantado,
- * os outros 3 dobrados.
- */
-function isOneFingerUp(lm) {
-  const f = fingersUp(lm);
-  return f[0] && !f[1] && !f[2] && !f[3];
-}
-
-/**
- * Dois dedos (V/paz): indicador e médio levantados,
- * anelar e mínimo dobrados.
- */
-function isTwoFingersUp(lm) {
-  const f = fingersUp(lm);
-  return f[0] && f[1] && !f[2] && !f[3];
-}
-
-/* ── Callback do MediaPipe ───────────────────────────── */
 function onResults(results) {
   canvasEl.width  = videoEl.videoWidth  || 220;
   canvasEl.height = videoEl.videoHeight || 160;
@@ -428,7 +559,6 @@ function onResults(results) {
   ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
   ctx.drawImage(results.image, 0, 0, canvasEl.width, canvasEl.height);
 
-  /* reset gestos */
   gestureKeys.ArrowUp    = false;
   gestureKeys.ArrowDown  = false;
   gestureKeys.ArrowLeft  = false;
@@ -439,40 +569,25 @@ function onResults(results) {
   if (results.multiHandLandmarks && results.multiHandedness) {
     for (let i = 0; i < results.multiHandLandmarks.length; i++) {
       const lm   = results.multiHandLandmarks[i];
-      // MediaPipe retorna "Left"/"Right" relativo à imagem espelhada
-      // → "Left" na imagem = mão direita do usuário e vice-versa
-      const side = results.multiHandedness[i].label; // 'Left' | 'Right'
+      const side = results.multiHandedness[i].label;
 
       drawConnectors(ctx, lm, HAND_CONNECTIONS, { color: 'rgba(0,255,200,0.7)', lineWidth: 1.5 });
       drawLandmarks(ctx, lm, { color: '#fff', lineWidth: 1, radius: 3 });
 
-      // ── Mão ESQUERDA do usuário → side === 'Right' (espelhado) ──
       if (side === 'Right') {
-        if (isOpenHand(lm)) {
-          gestureKeys.ArrowUp = true;
-          label += '🖐 Avançar  ';
-        } else if (isClosedFist(lm)) {
-          gestureKeys.ArrowDown = true;
-          label += '✊ Ré  ';
-        }
+        if (isOpenHand(lm))   { gestureKeys.ArrowUp   = true; label += '🖐 Avançar  '; }
+        else if (isClosedFist(lm)) { gestureKeys.ArrowDown = true; label += '✊ Ré  '; }
       }
 
-      // ── Mão DIREITA do usuário → side === 'Left' (espelhado) ──
       if (side === 'Left') {
-        if (isOneFingerUp(lm)) {
-          gestureKeys.ArrowLeft = true;
-          label += '☝️ Esquerda  ';
-        } else if (isTwoFingersUp(lm)) {
-          gestureKeys.ArrowRight = true;
-          label += '✌️ Direita  ';
-        }
+        if (isOneFingerUp(lm))  { gestureKeys.ArrowLeft  = true; label += '☝️ Esquerda  '; }
+        else if (isTwoFingersUp(lm)) { gestureKeys.ArrowRight = true; label += '✌️ Direita  '; }
       }
     }
   }
 
   ctx.restore();
 
-  /* atualiza HUD */
   iconFwd.classList.toggle('active', gestureKeys.ArrowUp);
   iconBwd.classList.toggle('active', gestureKeys.ArrowDown);
   iconLft.classList.toggle('active', gestureKeys.ArrowLeft);
@@ -481,21 +596,19 @@ function onResults(results) {
   statusEl.textContent = label || '🤲 Aguardando gestos…';
 }
 
-/* ── Inicializa MediaPipe ────────────────────────────── */
 const hands = new Hands({
   locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`
 });
 
 hands.setOptions({
-  maxNumHands:        2,
-  modelComplexity:    0,
+  maxNumHands:            2,
+  modelComplexity:        0,
   minDetectionConfidence: 0.7,
   minTrackingConfidence:  0.6,
 });
 
 hands.onResults(onResults);
 
-/* ── Inicializa câmera ───────────────────────────────── */
 const camera = new Camera(videoEl, {
   onFrame: async () => { await hands.send({ image: videoEl }); },
   width:  180,
