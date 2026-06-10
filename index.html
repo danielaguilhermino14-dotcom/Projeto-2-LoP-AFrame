@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carro 3D — Controle por Gestos</title>
+  <title>Carro 3D — Controle por Gestos Infinito</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
@@ -205,82 +205,18 @@
 <div id="scene-container">
   <a-scene embedded style="width:100%;height:100vh;" vr-mode-ui="enabled:false" renderer="antialias:true">
 
-    <a-assets>
-      <a-mixin id="wheel"
-        geometry="primitive:cylinder;radius:0.28;height:0.18;segments-radial:20"
-        material="color:#222;roughness:0.9;metalness:0.1"></a-mixin>
-    </a-assets>
-
     <a-sky color="#b0d8f5"></a-sky>
-    <a-plane position="0 0 0" rotation="-90 0 0" width="200" height="200"
+    
+    <a-plane id="floor-plane" position="0 0 0" rotation="-90 0 0" width="200" height="600"
              material="color:#5a9e5a;roughness:1"></a-plane>
 
-    <a-plane position="0 0.01 0" rotation="-90 0 0" width="6" height="400"
+    <a-plane id="road-plane" position="0 0.01 0" rotation="-90 0 0" width="6" height="600"
              color="#555" shadow></a-plane>
-    <a-plane position="0 0.015 0" rotation="-90 0 0" width="0.25" height="400"
+             
+    <a-plane id="road-line" position="0 0.015 0" rotation="-90 0 0" width="0.25" height="600"
              material="color:#fff;opacity:0.5;transparent:true"></a-plane>
 
-    <a-entity position="5 0 -20">
-      <a-cylinder position="0 0.6 0" radius="0.15" height="1.2" color="#5c3a1e"></a-cylinder>
-      <a-cone position="0 1.8 0" radius-bottom="0.9" height="2" color="#2d6a2d"></a-cone>
-    </a-entity>
-    <a-entity position="-5 0 -20">
-      <a-cylinder position="0 0.6 0" radius="0.15" height="1.2" color="#5c3a1e"></a-cylinder>
-      <a-cone position="0 1.8 0" radius-bottom="0.9" height="2" color="#2d6a2d"></a-cone>
-    </a-entity>
-    <a-entity position="5 0 20">
-      <a-cylinder position="0 0.6 0" radius="0.15" height="1.2" color="#5c3a1e"></a-cylinder>
-      <a-cone position="0 1.8 0" radius-bottom="0.9" height="2" color="#2d6a2d"></a-cone>
-    </a-entity>
-    <a-entity position="-5 0 20">
-      <a-cylinder position="0 0.6 0" radius="0.15" height="1.2" color="#5c3a1e"></a-cylinder>
-      <a-cone position="0 1.8 0" radius-bottom="0.9" height="2" color="#2d6a2d"></a-cone>
-    </a-entity>
-
-    <a-box id="obs-0" position="-1.5 0.5 -15" width="1.4" height="1.0" depth="1.4"
-           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
-    <a-box id="obs-1" position=" 1.5 0.5 -22" width="1.4" height="1.0" depth="1.4"
-           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
-
-    <a-box id="obs-2" position="0   0.5 -38" width="1.4" height="1.0" depth="1.4"
-           material="color:#c03000;roughness:0.5;metalness:0.3"></a-box>
-    <a-box id="obs-3" position="-1.8 0.5 -50" width="1.4" height="1.0" depth="1.4"
-           material="color:#c03000;roughness:0.5;metalness:0.3"></a-box>
-
-    <a-box id="obs-4" position=" 1.5 0.5 -65" width="1.4" height="1.0" depth="1.4"
-           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
-    <a-box id="obs-5" position="-1.2 0.5 -78" width="1.4" height="1.0" depth="1.4"
-           material="color:#e05010;roughness:0.5;metalness:0.3"></a-box>
-
-    <a-entity id="col-0" position="-0.8 0.6 -10" class="collectible">
-      <a-dodecahedron radius="0.28"
-        material="color:#ffe94d;emissive:#ffcc00;emissiveIntensity:1.2;roughness:0.1;metalness:0.8"
-        animation="property:rotation;to:360 360 0;loop:true;dur:2000;easing:linear"
-        animation__bob="property:position;to:-0.8 1.0 -10;from:-0.8 0.6 -10;loop:true;dur:1200;dir:alternate;easing:easeInOutSine">
-      </a-dodecahedron>
-      <a-sphere radius="0.38" material="color:#ffee00;opacity:0.18;transparent:true;side:back"></a-sphere>
-    </a-entity>
-
-    <a-entity id="col-1" position=" 1.2 0.6 -18" class="collectible">
-      <a-dodecahedron radius="0.28"
-        material="color:#ffe94d;emissive:#ffcc00;emissiveIntensity:1.2;roughness:0.1;metalness:0.8"
-        animation="property:rotation;to:360 360 0;loop:true;dur:2000;easing:linear"
-        animation__bob="property:position;to:1.2 1.0 -18;from:1.2 0.6 -18;loop:true;dur:1400;dir:alternate;easing:easeInOutSine">
-      </a-dodecahedron>
-      <a-sphere radius="0.38" material="color:#ffee00;opacity:0.18;transparent:true;side:back"></a-sphere>
-    </a-entity>
-
-    <a-entity id="col-2" position="0 0.6 -30" class="collectible">
-      <a-dodecahedron radius="0.28"
-        material="color:#00ffcc;emissive:#00ddaa;emissiveIntensity:1.4;roughness:0.1;metalness:0.8"
-        animation="property:rotation;to:360 360 0;loop:true;dur:1800;easing:linear"
-        animation__bob="property:position;to:0 1.0 -30;from:0 0.6 -30;loop:true;dur:1100;dir:alternate;easing:easeInOutSine">
-      </a-dodecahedron>
-      <a-sphere radius="0.38" material="color:#00ffcc;opacity:0.18;transparent:true;side:back"></a-sphere>
-    </a-entity>
-
     <a-entity id="car" position="0 0 0" car-controller>
-
       <a-box position="0 0.45 0" width="1.1" height="0.28" depth="2.3"
              material="color:#cc2222;roughness:0.5;metalness:0.3"></a-box>
       <a-box position="0 0.75 0.1" width="0.95" height="0.42" depth="1.3"
@@ -305,7 +241,7 @@
       <a-box position="0.3 0.46 1.17"  width="0.22" height="0.1" depth="0.05"
              material="color:#ff4444;emissive:#cc0000;emissiveIntensity:0.4"></a-box>
 
-      <a-box position="0 0.38 -1.17" width="0.7" height="0.12" depth="0.05"
+      <a-box position="0 0.3 -1.17" width="0.7" height="0.12" depth="0.05"
              material="color:#333;roughness:0.6;metalness:0.5"></a-box>
 
       <a-box position="0 0.3 -1.19" width="1.05" height="0.1" depth="0.06"
@@ -319,29 +255,28 @@
       <a-entity id="wheel-fl" position="-0.63 0.28 -0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-cylinder>
       </a-entity>
       <a-entity id="wheel-fr" position="0.63 0.28 -0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-entity>
+      </a-entity>
       <a-entity id="wheel-rl" position="-0.63 0.28 0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-entity>
+      </a-entity>
       <a-entity id="wheel-rr" position="0.63 0.28 0.78" rotation="0 0 90">
         <a-cylinder radius="0.28" height="0.18" segments-radial="20" material="color:#222;roughness:0.9"></a-cylinder>
         <a-cylinder radius="0.15" height="0.19" segments-radial="12" material="color:#aaa;roughness:0.3;metalness:0.7"></a-cylinder>
-        <a-cylinder radius="0.04" height="0.2"  segments-radial="6"  material="color:#666"></a-entity>
-
-      <a-entity position="0 2 4.5" rotation="-12 0 0">
-        <a-camera fov="60" near="0.1" far="1000"
-                  look-controls="enabled:true"
-                  wasd-controls="enabled:true"></a-camera>
       </a-entity>
     </a-entity>
 
-    <a-light type="ambient"     intensity="0.7" color="#fff"></a-light>
+    <a-entity id="camera-rig" position="0 2 4.5">
+      <a-camera fov="60" near="0.1" far="1000"
+                look-controls="enabled:false"
+                wasd-controls="enabled:false"></a-camera>
+    </a-entity>
+
+    <a-light type="ambient" intensity="0.7" color="#fff"></a-light>
     <a-light type="directional" position="5 10 5" intensity="0.9" color="#fff" castShadow="true"></a-light>
   </a-scene>
 </div>
@@ -385,13 +320,13 @@
 </div>
 
 <script>
-/* ── Estado global dos gestos (modificado pelo MediaPipe) ── */
+/* ── Estado global dos gestos ── */
 const gestureKeys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
 
-/* ── Estado do jogo (Sem vidas) ───────────────────────────── */
+/* ── Estado do jogo ── */
 const gameState = {
   score: 0,
-  invincible: false,   // cooldown pós-colisão para feedback
+  invincible: false,
 };
 
 const scoreEl = document.getElementById('score-val');
@@ -414,36 +349,122 @@ function triggerDamageFlash() {
   setTimeout(() => flashEl.classList.remove('hit'), 250);
 }
 
-/* ── Obstáculos e coletáveis ─────────────────────────────── */
+/* ── GERENCIADOR PROCEDURAL DE CENÁRIO ── */
 const OBSTACLES = [];
 const COLLECTIBLES = [];
+const DECORATIONS = []; // Árvores e estética lateral
+let currentMaxGeneratedZ = -20;
 
-document.querySelector('a-scene').addEventListener('loaded', () => {
-  for (let i = 0; i <= 5; i++) {
-    const el = document.getElementById(`obs-${i}`);
-    if (el) OBSTACLES.push(el);
+function spawnElement(type, x, z) {
+  const scene = document.querySelector('a-scene');
+  
+  if (type === 'obstacle') {
+    const obs = document.createElement('a-box');
+    obs.setAttribute('position', `${x} 0.5 ${z}`);
+    obs.setAttribute('width', '1.4');
+    obs.setAttribute('height', '1.0');
+    obs.setAttribute('depth', '1.4');
+    obs.setAttribute('material', 'color:#e05010;roughness:0.5;metalness:0.3');
+    scene.appendChild(obs);
+    OBSTACLES.push(obs);
+    
+  } else if (type === 'collectible') {
+    const colContainer = document.createElement('a-entity');
+    colContainer.setAttribute('position', `${x} 0.6 ${z}`);
+    
+    const dodef = document.createElement('a-dodecahedron');
+    dodef.setAttribute('radius', '0.28');
+    dodef.setAttribute('material', 'color:#ffe94d;emissive:#ffcc00;emissiveIntensity:1.2;roughness:0.1;metalness:0.8');
+    dodef.setAttribute('animation', 'property:rotation;to:360 360 0;loop:true;dur:2000;easing:linear');
+    // Animação usando pulo relativo corrigido (Adeus sombras!)
+    dodef.setAttribute('animation__bob', 'property:position;from:0 0 0;to:0 0.4 0;loop:true;dur:1200;dir:alternate;easing:easeInOutSine');
+    
+    colContainer.appendChild(dodef);
+    scene.appendChild(colContainer);
+    COLLECTIBLES.push({ el: colContainer, active: true });
+    
+  } else if (type === 'tree') {
+    const tree = document.createElement('a-entity');
+    tree.setAttribute('position', `${x} 0 ${z}`);
+    
+    const trunk = document.createElement('a-cylinder');
+    trunk.setAttribute('position', '0 0.6 0');
+    trunk.setAttribute('radius', '0.15');
+    trunk.setAttribute('height', '1.2');
+    trunk.setAttribute('color', '#5c3a1e');
+    
+    const top = document.createElement('a-cone');
+    top.setAttribute('position', '0 1.8 0');
+    top.setAttribute('radius-bottom', '0.9');
+    top.setAttribute('height', '2');
+    top.setAttribute('color', '#2d6a2d');
+    
+    tree.appendChild(trunk);
+    tree.appendChild(top);
+    scene.appendChild(tree);
+    DECORATIONS.push(tree);
   }
-  // Coleta apenas os 3 adicionados no HTML
-  for (let i = 0; i <= 2; i++) {
-    const el = document.getElementById(`col-${i}`);
-    if (el) COLLECTIBLES.push({ el, active: true });
+}
+
+function generateSegment(fromZ, toZ) {
+  // Passa gerando pedaços a cada 22 metros
+  for (let z = fromZ; z > toZ; z -= 22) {
+    // Árvores nas margens laterais
+    spawnElement('tree', -5.5 - Math.random() * 2, z + (Math.random() * 6 - 3));
+    spawnElement('tree',  5.5 + Math.random() * 2, z + (Math.random() * 6 - 3));
+
+    // Decide o que colocar na pista central (-1.8 a 1.8 de largura)
+    const rand = Math.random();
+    const roadX = (Math.random() * 3.6) - 1.8;
+    
+    if (rand < 0.35) {
+      spawnElement('obstacle', roadX, z);
+    } else if (rand < 0.70) {
+      spawnElement('collectible', roadX, z - 6);
+    }
   }
-});
+}
+
+function cleanupPassedElements(carZ) {
+  const threshold = carZ + 40; // Exclui tudo que ficou 40m para trás
+
+  // Limpa Obstáculos
+  for (let i = OBSTACLES.length - 1; i >= 0; i--) {
+    if (OBSTACLES[i].getAttribute('position').z > threshold) {
+      OBSTACLES[i].parentNode.removeChild(OBSTACLES[i]);
+      OBSTACLES.splice(i, 1);
+    }
+  }
+  // Limpa Moedas
+  for (let i = COLLECTIBLES.length - 1; i >= 0; i--) {
+    if (COLLECTIBLES[i].el.getAttribute('position').z > threshold) {
+      COLLECTIBLES[i].el.parentNode.removeChild(COLLECTIBLES[i].el);
+      COLLECTIBLES.splice(i, 1);
+    }
+  }
+  // Limpa Árvores
+  for (let i = DECORATIONS.length - 1; i >= 0; i--) {
+    if (DECORATIONS[i].getAttribute('position').z > threshold) {
+      DECORATIONS[i].parentNode.removeChild(DECORATIONS[i]);
+      DECORATIONS.splice(i, 1);
+    }
+  }
+}
 
 function dist2D(ax, az, bx, bz) {
   const dx = ax - bx, dz = az - bz;
   return Math.sqrt(dx*dx + dz*dz);
 }
 
-/* ── Componente do carro ─────────────────────────────────── */
+/* ── Componente do controlador do carro ── */
 AFRAME.registerComponent('car-controller', {
   init () {
     this.physKeys   = {};
     this.speed      = 0;
-    this.maxSpeed   = 0.24;
-    this.accel      = 0.012;
+    this.maxSpeed   = 0.28;
+    this.accel      = 0.014;
     this.friction   = 0.92;
-    this.turnSpeed  = 0.04;
+    this.turnSpeed  = 0.045;
     this.angle      = 0;
 
     this._kd = e => { this.physKeys[e.key] = true;  };
@@ -455,27 +476,35 @@ AFRAME.registerComponent('car-controller', {
     this.fr = document.getElementById('wheel-fr');
     this.rl = document.getElementById('wheel-rl');
     this.rr = document.getElementById('wheel-rr');
+
+    // Inicializa os primeiros 250 metros procedurais do mapa
+    generateSegment(0, -250);
+    currentMaxGeneratedZ = -250;
   },
 
   tick () {
     const k = key => this.physKeys[key] || gestureKeys[key];
 
-    if (k('ArrowUp'))        this.speed = Math.min(this.speed + this.accel,  this.maxSpeed);
+    // Física de Aceleração
+    if (k('ArrowUp'))         this.speed = Math.min(this.speed + this.accel,  this.maxSpeed);
     else if (k('ArrowDown')) this.speed = Math.max(this.speed - this.accel, -this.maxSpeed * 0.6);
     else                     this.speed *= this.friction;
 
+    // Direção
     if (Math.abs(this.speed) > 0.001) {
       const dir = this.speed > 0 ? 1 : -1;
       if (k('ArrowLeft'))  this.angle += this.turnSpeed * dir;
       if (k('ArrowRight')) this.angle -= this.turnSpeed * dir;
     }
 
+    // Atualização de posição e rotação do Carro
     const pos = this.el.getAttribute('position');
     pos.x -= Math.sin(this.angle) * this.speed;
     pos.z -= Math.cos(this.angle) * this.speed;
     this.el.setAttribute('position', pos);
     this.el.setAttribute('rotation', {x:0, y: THREE.MathUtils.radToDeg(this.angle), z:0});
 
+    // Rotação visual das rodas
     const roll  = THREE.MathUtils.radToDeg(this.speed * 18);
     const steer = k('ArrowLeft') ? 28 : k('ArrowRight') ? -28 : 0;
     if (this.fl) this.fl.setAttribute('rotation', `${roll} ${steer} 90`);
@@ -483,7 +512,39 @@ AFRAME.registerComponent('car-controller', {
     if (this.rl) this.rl.setAttribute('rotation', `${roll} 0 90`);
     if (this.rr) this.rr.setAttribute('rotation', `${roll} 0 90`);
 
-    /* ── Colisão com obstáculos (Sem perda de vida) ───── */
+    /* ── GERENCIAMENTO INFINITO DO CENÁRIO ── */
+    // Move o chão e asfalto para acompanhar o carro continuamente
+    const floorCenter = Math.floor(pos.z / 200) * 200;
+    document.getElementById('floor-plane').setAttribute('position', `0 0 ${floorCenter}`);
+    document.getElementById('road-plane').setAttribute('position', `0 0.01 ${floorCenter}`);
+    document.getElementById('road-line').setAttribute('position', `0 0.015 ${floorCenter}`);
+
+    // Se o carro chegar perto do fim da zona gerada, cria mais estrada para frente
+    if (pos.z < currentMaxGeneratedZ + 120) {
+      generateSegment(currentMaxGeneratedZ, currentMaxGeneratedZ - 200);
+      currentMaxGeneratedZ -= 200;
+      cleanupPassedElements(pos.z);
+    }
+
+    /* ── GERENCIAMENTO DE SUAVIZAÇÃO DA CÂMERA ── */
+    const rig = document.getElementById('camera-rig');
+    if (rig) {
+      const currentRigPos = rig.getAttribute('position');
+      // Alvo ideal da câmera posicionado atrás do carro baseado no seu ângulo atual
+      const targetCamX = pos.x + Math.sin(this.angle) * 4.5;
+      const targetCamZ = pos.z + Math.cos(this.angle) * 4.5;
+      const targetCamY = pos.y + 2.0;
+
+      // Interpolação Linear (Lerp) para suavizar movimento e rotação brusca
+      currentRigPos.x += (targetCamX - currentRigPos.x) * 0.12;
+      currentRigPos.z += (targetCamZ - currentRigPos.z) * 0.12;
+      currentRigPos.y += (targetCamY - currentRigPos.y) * 0.12;
+      
+      rig.setAttribute('position', currentRigPos);
+      rig.setAttribute('rotation', {x: -12, y: THREE.MathUtils.radToDeg(this.angle), z: 0});
+    }
+
+    /* ── Colisões com Obstáculos Procedurais ── */
     if (!gameState.invincible) {
       for (const obs of OBSTACLES) {
         const op = obs.getAttribute('position');
@@ -491,11 +552,8 @@ AFRAME.registerComponent('car-controller', {
         if (dist2D(pos.x, pos.z, op.x, op.z) < 1.1) {
           triggerDamageFlash();
           showNotif('💥 Batida!', '#ff4455');
+          this.speed *= -0.6; // Empurrão mecânico reverso
 
-          // Apenas repele o carro
-          this.speed *= -0.6;
-
-          // Cooldown de colisão (1.5 s)
           gameState.invincible = true;
           setTimeout(() => { gameState.invincible = false; }, 1500);
           break;
@@ -503,7 +561,7 @@ AFRAME.registerComponent('car-controller', {
       }
     }
 
-    /* ── Colisão com coletáveis ─────────────────────── */
+    /* ── Colisões com Coletáveis Procedurais ── */
     for (const col of COLLECTIBLES) {
       if (!col.active) continue;
       const cp = col.el.getAttribute('position');
@@ -525,7 +583,7 @@ AFRAME.registerComponent('car-controller', {
 });
 
 /* ══════════════════════════════════════════════════════
-   MediaPipe Hands
+    MediaPipe Hands
 ═══════════════════════════════════════════════════════ */
 const videoEl  = document.getElementById('input-video');
 const canvasEl = document.getElementById('output-canvas');
@@ -575,12 +633,12 @@ function onResults(results) {
       drawLandmarks(ctx, lm, { color: '#fff', lineWidth: 1, radius: 3 });
 
       if (side === 'Right') {
-        if (isOpenHand(lm))   { gestureKeys.ArrowUp   = true; label += '🖐 Avançar  '; }
+        if (isOpenHand(lm))        { gestureKeys.ArrowUp   = true; label += '🖐 Avançar  '; }
         else if (isClosedFist(lm)) { gestureKeys.ArrowDown = true; label += '✊ Ré  '; }
       }
 
       if (side === 'Left') {
-        if (isOneFingerUp(lm))  { gestureKeys.ArrowLeft  = true; label += '☝️ Esquerda  '; }
+        if (isOneFingerUp(lm))       { gestureKeys.ArrowLeft  = true; label += '☝️ Esquerda  '; }
         else if (isTwoFingersUp(lm)) { gestureKeys.ArrowRight = true; label += '✌️ Direita  '; }
       }
     }
